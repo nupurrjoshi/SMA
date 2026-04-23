@@ -1,0 +1,2321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMA Lab Guide — Step by Step</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f2eb;
+  --bg2: #edeae0;
+  --surface: #ffffff;
+  --surface2: #faf9f6;
+  --border: #d8d3c7;
+  --border2: #c4bfb3;
+  --ink: #1a1714;
+  --ink2: #4a4540;
+  --ink3: #7a736a;
+  --accent: #c1440e;
+  --accent-light: #f5e8e2;
+  --accent2: #1a6b3c;
+  --accent2-light: #e2f0e8;
+  --accent3: #1a4a6b;
+  --accent3-light: #e2ecf5;
+  --yellow: #b8860b;
+  --yellow-light: #fdf6dc;
+  --mono: 'IBM Plex Mono', monospace;
+  --display: 'Fraunces', serif;
+  --body: 'DM Sans', sans-serif;
+  --step-done: #1a6b3c;
+  --step-active: #c1440e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 52px;
+  border-bottom: 2px solid var(--accent);
+}
+
+.topbar-brand {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.topbar-brand span { color: var(--accent); }
+
+.topbar-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #aaa;
+}
+
+#progress-text { color: #ddd; font-weight: 500; }
+
+.topbar-bar {
+  width: 140px;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.topbar-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+/* ── LAYOUT ── */
+#layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: calc(100vh - 52px);
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  position: sticky;
+  top: 52px;
+  height: calc(100vh - 52px);
+  overflow-y: auto;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+}
+
+.sidebar-section-title {
+  padding: 0 20px 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.sidebar-exp {
+  border-bottom: 1px solid var(--bg2);
+}
+
+.sidebar-exp-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+  color: var(--ink2);
+  font-family: var(--body);
+  font-size: 13px;
+}
+
+.sidebar-exp-btn:hover { background: var(--bg2); }
+.sidebar-exp-btn.active { background: var(--accent-light); color: var(--accent); }
+
+.exp-num-badge {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg2);
+  color: var(--ink3);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.sidebar-exp-btn.active .exp-num-badge {
+  background: var(--accent);
+  color: #fff;
+}
+
+.sidebar-exp-btn.done .exp-num-badge {
+  background: var(--accent2);
+  color: #fff;
+}
+
+.sidebar-exp-btn.done .exp-num-badge::after {
+  content: '✓';
+}
+
+.exp-label { flex: 1; line-height: 1.3; font-weight: 500; }
+
+.sidebar-steps {
+  display: none;
+  padding: 0 0 8px 0;
+  background: var(--bg2);
+}
+
+.sidebar-steps.open { display: block; }
+
+.sidebar-step-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 20px 5px 44px;
+  font-size: 12px;
+  color: var(--ink3);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.sidebar-step-link:hover { color: var(--accent); }
+.sidebar-step-link.done { color: var(--accent2); }
+
+.step-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--border2);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.sidebar-step-link.done .step-dot { background: var(--accent2); }
+
+/* ── MAIN ── */
+#main {
+  padding: 40px 56px 80px;
+  max-width: 860px;
+}
+
+/* ── HERO ── */
+.hero {
+  margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 2px solid var(--border);
+}
+
+.hero-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.hero h1 {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 52px;
+  line-height: 1.0;
+  letter-spacing: -1px;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.hero h1 em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--accent);
+}
+
+.hero p {
+  color: var(--ink2);
+  font-size: 16px;
+  max-width: 520px;
+  line-height: 1.6;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+}
+
+.hero-stat { }
+.hero-stat .val {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 32px;
+  color: var(--ink);
+  line-height: 1;
+}
+.hero-stat .lbl {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 2px;
+}
+
+/* ── EXPERIMENT CARD ── */
+.experiment {
+  margin-bottom: 72px;
+  scroll-margin-top: 72px;
+}
+
+.exp-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.exp-number-big {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 96px;
+  line-height: 0.85;
+  color: var(--bg2);
+  position: absolute;
+  top: -16px;
+  left: -12px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.exp-header-content {
+  position: relative;
+  z-index: 1;
+  padding-left: 8px;
+  border-left: 3px solid var(--accent);
+  margin-left: 0;
+}
+
+.exp-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.exp-header-content h2 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 26px;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.exp-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.meta-chip {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--ink3);
+  background: var(--surface);
+}
+
+.meta-chip.tool { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+/* ── STEPS ── */
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 0 20px;
+  scroll-margin-top: 80px;
+}
+
+.step-spine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border2);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink3);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+  position: relative;
+  z-index: 1;
+}
+
+.step-circle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.step-circle.done {
+  background: var(--accent2);
+  border-color: var(--accent2);
+  color: #fff;
+}
+
+.step-circle.done::after {
+  content: '✓';
+  font-size: 14px;
+}
+
+.step-circle.done .step-num { display: none; }
+
+.step-line {
+  width: 2px;
+  flex: 1;
+  background: var(--border);
+  margin: 4px 0;
+  min-height: 20px;
+}
+
+.step-line.done { background: var(--accent2); }
+
+.step-body {
+  padding-bottom: 32px;
+}
+
+.step-title {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 8px;
+  padding-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-type-badge {
+  font-family: var(--mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.badge-action { background: var(--accent3-light); color: var(--accent3); border: 1px solid #b8d0e8; }
+.badge-code { background: #1a1714; color: #e8d5b5; }
+.badge-note { background: var(--yellow-light); color: var(--yellow); border: 1px solid #e0c870; }
+.badge-output { background: var(--accent2-light); color: var(--accent2); border: 1px solid #a8d4ba; }
+.badge-gui { background: var(--accent-light); color: var(--accent); border: 1px solid #e4b09a; }
+
+.step-desc {
+  font-size: 14px;
+  color: var(--ink2);
+  margin-bottom: 12px;
+  line-height: 1.65;
+}
+
+.step-desc strong { color: var(--ink); font-weight: 600; }
+
+/* ── CODE ── */
+.code-wrap {
+  position: relative;
+  margin: 12px 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #2a2520;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1a1714;
+  padding: 8px 14px;
+  border-bottom: 1px solid #2e2820;
+}
+
+.code-filename {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #8a7f74;
+  letter-spacing: 0.3px;
+}
+
+.code-lang {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: #c1440e;
+  background: rgba(193,68,14,0.15);
+  padding: 2px 7px;
+  border-radius: 3px;
+  margin-left: 8px;
+}
+
+.copy-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #8a7f74;
+  background: transparent;
+  border: 1px solid #3a3028;
+  border-radius: 4px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.3px;
+}
+
+.copy-btn:hover { color: #ddd; border-color: #5a5048; }
+.copy-btn.copied { color: #5aad7a; border-color: #3a7a5a; }
+
+pre {
+  background: #0f0d0b;
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.75;
+  color: #d4c9bc;
+}
+
+/* Token colors — warm-toned dark theme */
+.kw  { color: #e07050; }
+.fn  { color: #82b4d4; }
+.st  { color: #98c48a; }
+.cm  { color: #6a6058; font-style: italic; }
+.nb  { color: #d4aa70; }
+.nm  { color: #c8a8e0; }
+.op  { color: #d4c9bc; }
+.hl  { color: #f0d070; }
+
+/* ── NOTE BOX ── */
+.note-box {
+  background: var(--yellow-light);
+  border: 1px solid #e0c870;
+  border-left: 3px solid var(--yellow);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #5a4a10;
+  margin: 10px 0;
+}
+
+.note-box strong { color: #3a3000; }
+
+.info-box {
+  background: var(--accent3-light);
+  border: 1px solid #b8d0e8;
+  border-left: 3px solid var(--accent3);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #0a2a4a;
+  margin: 10px 0;
+}
+
+.success-box {
+  background: var(--accent2-light);
+  border: 1px solid #a8d4ba;
+  border-left: 3px solid var(--accent2);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #0a2a1a;
+  margin: 10px 0;
+}
+
+/* ── EXPECTED OUTPUT ── */
+.output-wrap {
+  background: #0a0e0a;
+  border: 1px solid #1a3020;
+  border-left: 3px solid var(--accent2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.output-label {
+  background: #111810;
+  padding: 5px 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: #4a8a5a;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.output-content {
+  padding: 12px 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #7abd90;
+  line-height: 1.6;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* ── TABLE ── */
+.step-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 10px 0;
+}
+
+.step-table th {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.step-table td {
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  color: var(--ink2);
+}
+
+.step-table tr:nth-child(even) td { background: var(--surface2); }
+
+/* ── DIVIDER ── */
+.exp-divider {
+  border: none;
+  border-top: 2px dashed var(--border);
+  margin: 0 0 72px;
+}
+
+/* ── MARK DONE BTN ── */
+.mark-done-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+}
+
+.mark-done-btn:hover { border-color: var(--accent2); color: var(--accent2); background: var(--accent2-light); }
+.mark-done-btn.done { background: var(--accent2-light); border-color: var(--accent2); color: var(--accent2); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink3); }
+
+@media (max-width: 860px) {
+  #layout { grid-template-columns: 1fr; }
+  #sidebar { display: none; }
+  #main { padding: 24px 20px 60px; }
+  .hero h1 { font-size: 36px; }
+  .exp-number-big { font-size: 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header id="topbar">
+  <div class="topbar-brand">SMA <span>//</span> Lab Guide</div>
+  <div class="topbar-progress-wrap">
+    <span>Progress</span>
+    <div class="topbar-bar"><div class="topbar-bar-fill" id="top-progress"></div></div>
+    <span id="progress-text">0 / 10</span>
+  </div>
+</header>
+
+<div id="layout">
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-section-title">Experiments</div>
+
+  <div class="sidebar-exp" id="nav-1">
+    <button class="sidebar-exp-btn" onclick="toggleSidebarExp(1, 'p1')">
+      <div class="exp-num-badge" id="badge-1">1</div>
+      <div class="exp-label">Social Media Study</div>
+    </button>
+    <div class="sidebar-steps" id="snav-1">
+      <a class="sidebar-step-link" onclick="jumpTo('p1-s1')"><div class="step-dot"></div>Platform overview</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p1-s2')"><div class="step-dot"></div>Analytics tools</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p1-s3')"><div class="step-dot"></div>Technique mapping</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p1-s4')"><div class="step-dot"></div>Brand analysis</a>
+    </div>
+  </div>
+
+  <div class="sidebar-exp" id="nav-2">
+    <button class="sidebar-exp-btn" onclick="toggleSidebarExp(2, 'p2')">
+      <div class="exp-num-badge" id="badge-2">2</div>
+      <div class="exp-label">Web Scraping</div>
+    </button>
+    <div class="sidebar-steps" id="snav-2">
+      <a class="sidebar-step-link" onclick="jumpTo('p2-s1')"><div class="step-dot"></div>Install extension</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p2-s2')"><div class="step-dot"></div>Scrape Amazon/YouTube</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p2-s3')"><div class="step-dot"></div>Export CSV</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p2-s4')"><div class="step-dot"></div>Load in Python</a>
+    </div>
+  </div>
+
+  <div class="sidebar-exp" id="nav-3">
+    <button class="sidebar-exp-btn" onclick="toggleSidebarExp(3, 'p3')">
+      <div class="exp-num-badge" id="badge-3">3</div>
+      <div class="exp-label">YouTube Comments</div>
+    </button>
+    <div class="sidebar-steps" id="snav-3">
+      <a class="sidebar-step-link" onclick="jumpTo('p3-s1')"><div class="step-dot"></div>Scrape comments</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p3-s2')"><div class="step-dot"></div>Load CSV</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p3-s3')"><div class="step-dot"></div>Clean & display</a>
+    </div>
+  </div>
+
+  <div class="sidebar-exp" id="nav-4">
+    <button class="sidebar-exp-btn" onclick="toggleSidebarExp(4, 'p4')">
+      <div class="exp-num-badge" id="badge-4">4</div>
+      <div class="exp-label">EDA — Facebook</div>
+    </button>
+    <div class="sidebar-steps" id="snav-4">
+      <a class="sidebar-step-link" onclick="jumpTo('p4-s1')"><div class="step-dot"></div>Import libraries</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p4-s2')"><div class="step-dot"></div>Load & inspect data</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p4-s3')"><div class="step-dot"></div>Feature engineering</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p4-s4')"><div class="step-dot"></div>Univariate analysis</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p4-s5')"><div class="step-dot"></div>Categorical plots</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p4-s6')"><div class="step-dot"></div>Bivariate & heatmap</a>
+    </div>
+  </div>
+
+  <div class="sidebar-exp" id="nav-5">
+    <button class="sidebar-exp-btn" onclick="toggleSidebarExp(5, 'p5')">
+      <div class="exp-num-badge" id="badge-5">5</div>
+      <div class="exp-label">Sentiment + Trends</div>
+    </button>
+    <div class="sidebar-steps" id="snav-5">
+      <a class="sidebar-step-link" onclick="jumpTo('p5-s1')"><div class="step-dot"></div>Install packages</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p5-s2')"><div class="step-dot"></div>Download dataset</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p5-s3')"><div class="step-dot"></div>Label & polarity</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p5-s4')"><div class="step-dot"></div>Visualize sentiments</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p5-s5')"><div class="step-dot"></div>Word clouds</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p5-s6')"><div class="step-dot"></div>Google Trends</a>
+    </div>
+  </div>
+
+  <div class="sidebar-exp" id="nav-6">
+    <button class="sidebar-exp-btn" onclick="toggleSidebarExp(6, 'p6')">
+      <div class="exp-num-badge" id="badge-6">6</div>
+      <div class="exp-label">Network Analysis</div>
+    </button>
+    <div class="sidebar-steps" id="snav-6">
+      <a class="sidebar-step-link" onclick="jumpTo('p6-s1')"><div class="step-dot"></div>Import & build graph</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p6-s2')"><div class="step-dot"></div>Inspect nodes/edges</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p6-s3')"><div class="step-dot"></div>Spring layout</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p6-s4')"><div class="step-dot"></div>Random layout</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p6-s5')"><div class="step-dot"></div>Circular layout</a>
+    </div>
+  </div>
+
+  <div class="sidebar-exp" id="nav-7">
+    <button class="sidebar-exp-btn" onclick="toggleSidebarExp(7, 'p7')">
+      <div class="exp-num-badge" id="badge-7">7</div>
+      <div class="exp-label">Power BI Dashboard</div>
+    </button>
+    <div class="sidebar-steps" id="snav-7">
+      <a class="sidebar-step-link" onclick="jumpTo('p7-s1')"><div class="step-dot"></div>Connect data source</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p7-s2')"><div class="step-dot"></div>Power Query cleaning</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p7-s3')"><div class="step-dot"></div>Build visuals</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p7-s4')"><div class="step-dot"></div>Publish dashboard</a>
+    </div>
+  </div>
+
+  <div class="sidebar-exp" id="nav-8">
+    <button class="sidebar-exp-btn" onclick="toggleSidebarExp(8, 'p8')">
+      <div class="exp-num-badge" id="badge-8">8</div>
+      <div class="exp-label">Website Analytics</div>
+    </button>
+    <div class="sidebar-steps" id="snav-8">
+      <a class="sidebar-step-link" onclick="jumpTo('p8-s1')"><div class="step-dot"></div>Open SimilarWeb</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p8-s2')"><div class="step-dot"></div>Traffic & engagement</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p8-s3')"><div class="step-dot"></div>Marketing channels</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p8-s4')"><div class="step-dot"></div>Compare & conclude</a>
+    </div>
+  </div>
+
+  <div class="sidebar-exp" id="nav-9">
+    <button class="sidebar-exp-btn" onclick="toggleSidebarExp(9, 'p9')">
+      <div class="exp-num-badge" id="badge-9">9</div>
+      <div class="exp-label">Promotional Flyer</div>
+    </button>
+    <div class="sidebar-steps" id="snav-9">
+      <a class="sidebar-step-link" onclick="jumpTo('p9-s1')"><div class="step-dot"></div>Open Google Docs</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p9-s2')"><div class="step-dot"></div>Page setup</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p9-s3')"><div class="step-dot"></div>Add content</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p9-s4')"><div class="step-dot"></div>Export & submit</a>
+    </div>
+  </div>
+
+  <div class="sidebar-exp" id="nav-10">
+    <button class="sidebar-exp-btn" onclick="toggleSidebarExp(10, 'p10')">
+      <div class="exp-num-badge" id="badge-10">10</div>
+      <div class="exp-label">YouTube API + Sentiment</div>
+    </button>
+    <div class="sidebar-steps" id="snav-10">
+      <a class="sidebar-step-link" onclick="jumpTo('p10-s1')"><div class="step-dot"></div>Generate API key</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p10-s2')"><div class="step-dot"></div>Fetch video info</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p10-s3')"><div class="step-dot"></div>Fetch comments</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p10-s4')"><div class="step-dot"></div>Run sentiment</a>
+      <a class="sidebar-step-link" onclick="jumpTo('p10-s5')"><div class="step-dot"></div>Save to CSV</a>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-label">// Social Media Analytics · Lab Manual</div>
+    <h1>Step-by-Step<br><em>Lab Guide</em></h1>
+    <p>Follow each step in sequence. Click the step number circle to mark it done and track your progress.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="val">10</div><div class="lbl">Experiments</div></div>
+      <div class="hero-stat"><div class="val">42</div><div class="lbl">Steps</div></div>
+      <div class="hero-stat"><div class="val" id="done-count">0</div><div class="lbl">Completed</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- EXP 1 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="experiment" id="p1">
+    <div class="exp-header">
+      <div class="exp-number-big">1</div>
+      <div class="exp-header-content">
+        <div class="exp-tag">Experiment 01 · Theory</div>
+        <h2>Study of Social Media Platforms, Analytics Tools & Techniques</h2>
+        <div class="exp-meta">
+          <span class="meta-chip tool">No code required</span>
+          <span class="meta-chip">Theory + Analysis</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-container">
+
+      <div class="step" id="p1-s1">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)" title="Mark done"><span class="step-num">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Study the 5 Social Media Platforms</span><span class="step-type-badge badge-action">Read</span></div>
+          <div class="step-desc">Document each platform under: <strong>Use · Benefits · Security · Advantages · Disadvantages</strong></div>
+          <table class="step-table">
+            <tr><th>Platform</th><th>Primary Use</th><th>Key Advantage</th><th>Key Disadvantage</th></tr>
+            <tr><td>Facebook</td><td>Social networking, groups, pages</td><td>Huge user base, business marketing</td><td>Privacy concerns, fake news</td></tr>
+            <tr><td>Instagram</td><td>Photos, Reels, Stories</td><td>High engagement, brand promotion</td><td>Time-consuming, limited links</td></tr>
+            <tr><td>Twitter (X)</td><td>Short messages, news, trending</td><td>Real-time info, trending topics</td><td>Character limit, trolling</td></tr>
+            <tr><td>LinkedIn</td><td>Professional networking, job search</td><td>Professional environment</td><td>Less entertainment</td></tr>
+            <tr><td>YouTube</td><td>Upload & watch videos</td><td>Global audience, learning platform</td><td>Ads, copyright issues</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="step" id="p1-s2">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)" title="Mark done"><span class="step-num">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Study & Compare Analytics Tools</span><span class="step-type-badge badge-action">Read</span></div>
+          <div class="step-desc">Write about <strong>Facebook Insights, Google Analytics, and Netlytic</strong>.</div>
+          <table class="step-table">
+            <tr><th>Tool</th><th>Use</th><th>Advantage</th><th>Disadvantage</th></tr>
+            <tr><td>Facebook Insights</td><td>Analyze FB page performance (reach, likes, demographics)</td><td>Free, easy to use</td><td>Facebook-only</td></tr>
+            <tr><td>Google Analytics</td><td>Track website traffic, user behavior, sources</td><td>Detailed reports, free tier</td><td>Complex for beginners</td></tr>
+            <tr><td>Netlytic</td><td>Collect & analyze public social media data</td><td>Interactive viz, easy collection</td><td>Limited advanced analytics</td></tr>
+          </table>
+          <div class="note-box"><strong>For each tool:</strong> Create an account (or screenshot an existing account) and write a brief analysis showing what data you examined.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p1-s3">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)" title="Mark done"><span class="step-num">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Explain the 4 Analysis Techniques</span><span class="step-type-badge badge-action">Write</span></div>
+          <div class="step-desc">Cover each technique: definition, key methods, and a real-world example.</div>
+          <table class="step-table">
+            <tr><th>Technique</th><th>What it does</th><th>Example</th></tr>
+            <tr><td><strong>Text Analysis</strong></td><td>Extracts patterns from unstructured text (posts, tweets, reviews)</td><td>Hashtag analysis on Twitter for brand trending</td></tr>
+            <tr><td><strong>Network Analysis</strong></td><td>Studies relationships using graph theory (nodes & edges)</td><td>Identifying influencers in a follower network</td></tr>
+            <tr><td><strong>Exploratory Analysis (EDA)</strong></td><td>Summarizes data statistically & visually before advanced analytics</td><td>Finding peak engagement day on a Facebook page</td></tr>
+            <tr><td><strong>Sentiment Analysis</strong></td><td>Classifies text as Positive / Negative / Neutral</td><td>Customer feedback analysis on product reviews</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="step" id="p1-s4">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)" title="Mark done"><span class="step-num">4</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Pick 5 Brands & Find Their Social Media Accounts</span><span class="step-type-badge badge-action">Research</span></div>
+          <div class="step-desc">For each brand, find all social media handles and assess: <strong>posting frequency, interaction type, strategy strengths & weaknesses, and recommendations</strong>. Use the 5 brands from your practical: <strong>Coca-Cola, Nike, Starbucks, Amazon, Netflix</strong>.</div>
+          <div class="info-box">📋 For each brand document: Platform → Handle → Posting Frequency → Broadcast or Conversational → One Recommendation to improve engagement.</div>
+          <button class="mark-done-btn" onclick="markExpDone(1)">✓ Mark Experiment 1 Complete</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <hr class="exp-divider">
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- EXP 2 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="experiment" id="p2">
+    <div class="exp-header">
+      <div class="exp-number-big">2</div>
+      <div class="exp-header-content">
+        <div class="exp-tag">Experiment 02 · Web Scraping</div>
+        <h2>Collect Data from Social Media Platforms & Business Websites</h2>
+        <div class="exp-meta">
+          <span class="meta-chip tool">Chrome Web Scraper</span>
+          <span class="meta-chip tool">Python / pandas</span>
+          <span class="meta-chip">Objective 1 + 2 + 3</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-container">
+
+      <div class="step" id="p2-s1">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Install Web Scraper Extension</span><span class="step-type-badge badge-gui">Browser</span></div>
+          <div class="step-desc">Open Google Chrome → go to <strong>chrome.google.com/webstore</strong> → search <strong>"Web Scraper"</strong> (by webscraper.io) → click Add to Chrome → confirm.</div>
+          <div class="info-box">After install, open Chrome DevTools (F12) → you'll see a new <strong>"Web Scraper"</strong> tab.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p2-s2">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Scrape YouTube / Amazon Data</span><span class="step-type-badge badge-gui">Browser</span></div>
+          <div class="step-desc">Navigate to <strong>YouTube</strong> (any video page) or <strong>Amazon</strong> (any product listing).</div>
+          <ol style="margin:10px 0 10px 20px; font-size:13px; color:var(--ink2); line-height:2;">
+            <li>Open DevTools → Web Scraper tab</li>
+            <li>Click <strong>Create new sitemap</strong> → enter the page URL → give it a name</li>
+            <li>Add a selector — click <strong>Add new selector</strong></li>
+            <li>For YouTube: select video title elements (type = Text)</li>
+            <li>Click <strong>Select</strong> → click one title → click <strong>Done selecting</strong></li>
+            <li>Save selector → go back → click <strong>Scrape</strong></li>
+            <li>Wait for scraping to complete</li>
+          </ol>
+          <div class="note-box"><strong>Alternative:</strong> Use <strong>Instant Data Scraper</strong> (Chrome extension) which auto-detects table-like data on the page — simpler for YouTube comment sections.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p2-s3">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Export as CSV</span><span class="step-type-badge badge-gui">Browser</span></div>
+          <div class="step-desc">After scraping completes → click <strong>Export data as CSV</strong> → save file as <code>youtube.csv</code> or <code>amazon.csv</code>.</div>
+          <div class="success-box">Your CSV should have columns like: title, URL, duration, channel name, upload date, views.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p2-s4">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">4</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Load & Clean Data in Python</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="step-desc">Open Google Colab → upload your CSV → run the following code:</div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract2.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># Load the scraped CSV file</span>
+df = pd.read_csv(<span class="st">'youtube1.csv'</span>)
+df.head(<span class="nm">5</span>)
+
+df.info()
+
+<span class="cm"># Drop columns not needed for analysis</span>
+cols_to_drop = [<span class="st">'href'</span>, <span class="st">'upload'</span>, <span class="st">'YouTube Links'</span>, <span class="st">'Likes'</span>, <span class="st">'reply'</span>]
+existing_cols = [col <span class="kw">for</span> col <span class="kw">in</span> cols_to_drop <span class="kw">if</span> col <span class="kw">in</span> df.columns]
+df = df.drop(columns=existing_cols)
+
+<span class="cm"># View and clean a single comment</span>
+text = df[<span class="st">'comments'</span>].iloc[<span class="nm">0</span>]
+print(text)
+text = text.replace(<span class="st">'!'</span>, <span class="st">' '</span>)
+print(text)
+
+<span class="cm"># Remove '@' from usernames</span>
+df[<span class="st">'username'</span>] = df[<span class="st">'username'</span>].str.replace(<span class="st">'@'</span>, <span class="st">''</span>)
+df.head(<span class="nm">20</span>)</code></pre>
+          </div>
+          <div class="success-box">✓ You should see a cleaned DataFrame with username and comments columns.</div>
+          <button class="mark-done-btn" onclick="markExpDone(2)">✓ Mark Experiment 2 Complete</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <hr class="exp-divider">
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- EXP 3 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="experiment" id="p3">
+    <div class="exp-header">
+      <div class="exp-number-big">3</div>
+      <div class="exp-header-content">
+        <div class="exp-tag">Experiment 03 · Scraping</div>
+        <h2>Scrape YouTube Comments & Perform Basic Cleaning</h2>
+        <div class="exp-meta">
+          <span class="meta-chip tool">Instant Data Scraper</span>
+          <span class="meta-chip tool">Python / pandas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-container">
+
+      <div class="step" id="p3-s1">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Scrape YouTube Comments with Instant Data Scraper</span><span class="step-type-badge badge-gui">Browser</span></div>
+          <div class="step-desc">Open any YouTube video → scroll down to the <strong>Comments section</strong> (let comments load).</div>
+          <ol style="margin:10px 0 10px 20px; font-size:13px; color:var(--ink2); line-height:2.2;">
+            <li>Click the <strong>Instant Data Scraper</strong> extension icon</li>
+            <li>It auto-detects comment rows — verify the preview looks correct</li>
+            <li>Click <strong>Start Crawling</strong> → wait for comments to be collected</li>
+            <li>Click <strong>Download XLSX / CSV</strong> → save as <code>youtube1.csv</code></li>
+          </ol>
+          <div class="note-box"><strong>Note:</strong> YouTube may rate-limit. Scrape only 20–50 comments for lab purposes.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p3-s2">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Load CSV into Colab & Inspect</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract3_load.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+df = pd.read_csv(<span class="st">'youtube1.csv'</span>)
+df.head(<span class="nm">5</span>)
+
+df.info()   <span class="cm"># Check columns, dtypes, null counts</span></code></pre>
+          </div>
+          <div class="output-wrap">
+            <div class="output-label">Expected Output</div>
+            <div class="output-content">RangeIndex: 25 entries, 0 to 24
+Data columns (total 7 columns):
+ #  Column          Non-Null Count  Dtype
+ 0  username        25 non-null     object
+ 1  comments        25 non-null     object
+ 2  href            25 non-null     object
+ 3  upload          25 non-null     object
+ 4  YouTube Links   25 non-null     object
+ 5  Likes           25 non-null     int64
+ 6  reply           25 non-null     int64</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p3-s3">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Clean & Display Final Data</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract3_clean.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="cm"># Drop columns not needed</span>
+cols_to_drop = [<span class="st">'href'</span>, <span class="st">'upload'</span>, <span class="st">'YouTube Links'</span>, <span class="st">'Likes'</span>, <span class="st">'reply'</span>]
+existing_cols = [col <span class="kw">for</span> col <span class="kw">in</span> cols_to_drop <span class="kw">if</span> col <span class="kw">in</span> df.columns]
+df = df.drop(columns=existing_cols)
+
+<span class="cm"># Preview first comment text</span>
+text = df[<span class="st">'comments'</span>].iloc[<span class="nm">0</span>]
+print(text)
+
+<span class="cm"># Remove '!' from text</span>
+text = text.replace(<span class="st">'!'</span>, <span class="st">' '</span>)
+print(text)
+
+<span class="cm"># Strip '@' symbol from usernames</span>
+df[<span class="st">'username'</span>] = df[<span class="st">'username'</span>].str.replace(<span class="st">'@'</span>, <span class="st">''</span>)
+df.head(<span class="nm">20</span>)</code></pre>
+          </div>
+          <div class="success-box">✓ Output shows a clean table with username and comments only.</div>
+          <button class="mark-done-btn" onclick="markExpDone(3)">✓ Mark Experiment 3 Complete</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <hr class="exp-divider">
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- EXP 4 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="experiment" id="p4">
+    <div class="exp-header">
+      <div class="exp-number-big">4</div>
+      <div class="exp-header-content">
+        <div class="exp-tag">Experiment 04 · EDA</div>
+        <h2>Exploratory Data Analysis on Facebook Social Media Data</h2>
+        <div class="exp-meta">
+          <span class="meta-chip tool">Google Colab</span>
+          <span class="meta-chip tool">pandas · numpy · matplotlib · seaborn</span>
+          <span class="meta-chip">Dataset: facebook.csv</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-container">
+
+      <div class="step" id="p4-s1">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Import Libraries</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="step-desc">Start a new Colab notebook. Run this cell first.</div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract4_imports.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns
+<span class="kw">import</span> warnings
+<span class="kw">from</span> IPython.display <span class="kw">import</span> display
+
+warnings.filterwarnings(<span class="st">'ignore'</span>)</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p4-s2">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Load & Inspect the Dataset</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="step-desc">Upload <code>facebook.csv</code> to Colab (Files sidebar → Upload). Then run:</div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract4_load.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code>data = pd.read_csv(<span class="st">'facebook.csv'</span>)
+
+display(data.head())         <span class="cm"># First 5 rows</span>
+display(data.tail())         <span class="cm"># Last 5 rows</span>
+data.info()                  <span class="cm"># Dtypes & null counts</span>
+display(data.nunique())      <span class="cm"># Unique values per column</span>
+display(data.isnull().sum()) <span class="cm"># Missing values</span>
+
+<span class="cm"># Drop userid — same as index, not useful</span>
+data = data.drop([<span class="st">'userid'</span>], axis=<span class="nm">1</span>)
+data.info()</code></pre>
+          </div>
+          <div class="note-box"><strong>Dataset:</strong> ~99,003 rows, 15 columns. Gender has 175 nulls; tenure has 2 nulls. Everything else is complete.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p4-s3">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Feature Engineering</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="step-desc">Create 4 new derived features from existing columns.</div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract4_features.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="cm"># 1. Convert tenure (days) → years</span>
+data[<span class="st">'Tenure_Years'</span>] = data[<span class="st">'tenure'</span>] / <span class="nm">365</span>
+display(data[[<span class="st">'tenure'</span>, <span class="st">'Tenure_Years'</span>]].head())
+
+<span class="cm"># 2. Bin age into named categories</span>
+data[<span class="st">'Age_Group'</span>] = pd.cut(data[<span class="st">'age'</span>],
+    bins=[<span class="nm">0</span>, <span class="nm">18</span>, <span class="nm">25</span>, <span class="nm">35</span>, <span class="nm">50</span>, <span class="nm">65</span>, <span class="nm">120</span>],
+    labels=[<span class="st">'Teens'</span>, <span class="st">'Young Adult'</span>, <span class="st">'Adult'</span>,
+            <span class="st">'Middle Aged'</span>, <span class="st">'Senior'</span>, <span class="st">'Old Senior'</span>])
+display(data[[<span class="st">'age'</span>, <span class="st">'Age_Group'</span>]].head())
+
+<span class="cm"># 3. Standardize gender labels + fill nulls</span>
+print(<span class="st">"Before:"</span>, data.gender.unique())
+data[<span class="st">'gender'</span>].fillna(<span class="st">'unknown'</span>, inplace=<span class="nb">True</span>)
+data[<span class="st">'gender'</span>] = data[<span class="st">'gender'</span>].replace({
+    <span class="st">"male"</span>: <span class="st">"Male"</span>, <span class="st">"female"</span>: <span class="st">"Female"</span>
+})
+print(<span class="st">"After:"</span>, data.gender.unique())
+
+<span class="cm"># 4. Total interactions metric</span>
+data[<span class="st">'Total_Interactions'</span>] = data[<span class="st">'likes'</span>] + data[<span class="st">'friendships_initiated'</span>]
+
+display(data[[<span class="st">'Age_Group'</span>, <span class="st">'Tenure_Years'</span>, <span class="st">'gender'</span>, <span class="st">'Total_Interactions'</span>]].head())</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p4-s4">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">4</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Univariate Analysis — Numeric Columns</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="step-desc">Print skewness and plot histogram + boxplot for every numeric column.</div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract4_univariate.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="cm"># Descriptive statistics</span>
+data.describe().T
+
+<span class="cm"># Separate numeric and categorical</span>
+cat_cols = data.select_dtypes(include=[<span class="st">'object'</span>]).columns
+num_cols = data.select_dtypes(include=np.number).columns.tolist()
+print(<span class="st">"Categorical:"</span>, cat_cols.tolist())
+print(<span class="st">"Numerical:"</span>, num_cols)
+
+<span class="cm"># Plot histogram + boxplot for each numeric column</span>
+<span class="kw">for</span> col <span class="kw">in</span> num_cols:
+    print(col, <span class="st">"| Skew:"</span>, round(data[col].skew(), <span class="nm">2</span>))
+    plt.figure(figsize=(<span class="nm">15</span>, <span class="nm">4</span>))
+    plt.subplot(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">1</span>)
+    data[col].hist(grid=<span class="nb">False</span>)
+    plt.ylabel(<span class="st">'count'</span>)
+    plt.subplot(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">2</span>)
+    sns.boxplot(x=data[col])
+    plt.show()</code></pre>
+          </div>
+          <div class="note-box">High skew values (e.g., mobile_likes: 14.16, mobile_likes_received: 107.53) indicate extreme outliers — most users have zero likes.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p4-s5">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">5</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Categorical Variable Plots</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="step-desc">Create a 3×2 grid of count plots for categorical and discrete variables.</div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract4_catplots.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code>fig, axes = plt.subplots(<span class="nm">3</span>, <span class="nm">2</span>, figsize=(<span class="nm">18</span>, <span class="nm">18</span>))
+fig.suptitle(<span class="st">'Bar plots for categorical variables — Facebook Dataset'</span>)
+
+sns.countplot(ax=axes[<span class="nm">0</span>, <span class="nm">0</span>], x=<span class="st">'gender'</span>, data=data, color=<span class="st">'blue'</span>,
+    order=data[<span class="st">'gender'</span>].value_counts().index)
+axes[<span class="nm">0</span>, <span class="nm">0</span>].set_title(<span class="st">'Distribution of Gender'</span>)
+
+sns.countplot(ax=axes[<span class="nm">0</span>, <span class="nm">1</span>], x=<span class="st">'dob_month'</span>, data=data, color=<span class="st">'blue'</span>,
+    order=data[<span class="st">'dob_month'</span>].value_counts().index)
+axes[<span class="nm">0</span>, <span class="nm">1</span>].set_title(<span class="st">'Users by Birth Month'</span>)
+
+sns.countplot(ax=axes[<span class="nm">1</span>, <span class="nm">0</span>], x=<span class="st">'Age_Group'</span>, data=data, color=<span class="st">'blue'</span>,
+    order=data[<span class="st">'Age_Group'</span>].value_counts().index)
+axes[<span class="nm">1</span>, <span class="nm">0</span>].set_title(<span class="st">'Users by Age Group'</span>)
+
+sns.countplot(ax=axes[<span class="nm">1</span>, <span class="nm">1</span>], x=<span class="st">'dob_day'</span>, data=data, color=<span class="st">'blue'</span>,
+    order=data[<span class="st">'dob_day'</span>].value_counts().index)
+axes[<span class="nm">1</span>, <span class="nm">1</span>].set_title(<span class="st">'Users by Day of Birth'</span>)
+
+sns.countplot(ax=axes[<span class="nm">2</span>, <span class="nm">0</span>], x=<span class="st">'dob_year'</span>, data=data, color=<span class="st">'blue'</span>,
+    order=data[<span class="st">'dob_year'</span>].value_counts().head(<span class="nm">20</span>).index)
+axes[<span class="nm">2</span>, <span class="nm">0</span>].set_title(<span class="st">'Top 20 Years of Birth'</span>)
+
+sns.countplot(ax=axes[<span class="nm">2</span>, <span class="nm">1</span>], x=<span class="st">'age'</span>, data=data, color=<span class="st">'blue'</span>,
+    order=data[<span class="st">'age'</span>].value_counts().head(<span class="nm">20</span>).index)
+axes[<span class="nm">2</span>, <span class="nm">1</span>].set_title(<span class="st">'Top 20 Specific Ages'</span>)
+
+axes[<span class="nm">1</span>][<span class="nm">1</span>].tick_params(labelrotation=<span class="nm">45</span>)
+axes[<span class="nm">2</span>][<span class="nm">0</span>].tick_params(labelrotation=<span class="nm">90</span>)
+axes[<span class="nm">2</span>][<span class="nm">1</span>].tick_params(labelrotation=<span class="nm">90</span>)
+plt.tight_layout(rect=[<span class="nm">0</span>, <span class="nm">0.03</span>, <span class="nm">1</span>, <span class="nm">0.95</span>])
+plt.show()</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p4-s6">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">6</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Log Transform → Pairplot → Correlation Heatmap</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract4_multivariate.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="cm"># Log transformation to reduce skew</span>
+<span class="kw">def</span> <span class="fn">log_transform</span>(data, col):
+    <span class="kw">for</span> colname <span class="kw">in</span> col:
+        <span class="kw">if</span> (data[colname] &lt;= <span class="nm">1.0</span>).any():
+            data[colname + <span class="st">'_log'</span>] = np.log(data[colname] + <span class="nm">1</span>)
+        <span class="kw">else</span>:
+            data[colname + <span class="st">'_log'</span>] = np.log(data[colname])
+
+log_transform(data, [<span class="st">'friend_count'</span>, <span class="st">'likes'</span>])
+
+<span class="cm"># Distribution of log-transformed friend_count</span>
+plt.figure(figsize=(<span class="nm">8</span>, <span class="nm">5</span>))
+sns.distplot(data[<span class="st">"friend_count_log"</span>], axlabel=<span class="st">"friend_count_log"</span>)
+plt.show()
+
+<span class="cm"># Bivariate pairplot (sample 1000 rows for speed)</span>
+sns.pairplot(data=data.drop([<span class="st">'friend_count'</span>, <span class="st">'likes'</span>], axis=<span class="nm">1</span>).sample(<span class="nm">1000</span>))
+plt.show()
+
+<span class="cm"># Multivariate correlation heatmap</span>
+plt.figure(figsize=(<span class="nm">12</span>, <span class="nm">7</span>))
+sns.heatmap(
+    data.drop([<span class="st">'friend_count'</span>, <span class="st">'likes'</span>], axis=<span class="nm">1</span>).corr(numeric_only=<span class="nb">True</span>),
+    annot=<span class="nb">True</span>, vmin=<span class="nm">-1</span>, vmax=<span class="nm">1</span>
+)
+plt.show()</code></pre>
+          </div>
+          <div class="success-box">✓ Heatmap will show strong correlations between likes_received / mobile_likes_received (0.97) and www_likes / www_likes_received (0.95).</div>
+          <button class="mark-done-btn" onclick="markExpDone(4)">✓ Mark Experiment 4 Complete</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <hr class="exp-divider">
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- EXP 5 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="experiment" id="p5">
+    <div class="exp-header">
+      <div class="exp-number-big">5</div>
+      <div class="exp-header-content">
+        <div class="exp-tag">Experiment 05 · NLP + Trends</div>
+        <h2>Sentiment Analysis on Tweets + Google Trends Analysis</h2>
+        <div class="exp-meta">
+          <span class="meta-chip tool">TextBlob · WordCloud · pytrends</span>
+          <span class="meta-chip">Dataset: Sentiment140 (Kaggle)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-container">
+
+      <div class="step" id="p5-s1">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Install Required Packages</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract5_install.sh</span><span class="code-lang">Shell</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code>!pip install kagglehub pandas matplotlib seaborn textblob wordcloud pytrends
+!python -m textblob.download_corpora</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p5-s2">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Download Dataset & Load Tweets</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="step-desc">Downloads Sentiment140 (1.6M tweets) from Kaggle. We use only 10,000 (5K negative + 5K positive).</div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract5_load.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="kw">import</span> kagglehub, pandas <span class="kw">as</span> pd
+<span class="kw">import</span> seaborn <span class="kw">as</span> sns, matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> textblob <span class="kw">import</span> TextBlob
+<span class="kw">from</span> wordcloud <span class="kw">import</span> WordCloud
+<span class="kw">from</span> matplotlib <span class="kw">import</span> style
+<span class="kw">from</span> pytrends.request <span class="kw">import</span> TrendReq
+style.use(<span class="st">"ggplot"</span>)
+
+path = kagglehub.dataset_download(<span class="st">"kazanova/sentiment140"</span>)
+file_path = path + <span class="st">"/training.1600000.processed.noemoticon.csv"</span>
+
+<span class="cm"># 5000 negative tweets (target=0)</span>
+df_neg = pd.read_csv(file_path, encoding=<span class="st">"latin-1"</span>,
+                     header=<span class="nb">None</span>, nrows=<span class="nm">5000</span>)
+
+<span class="cm"># 5000 positive tweets (target=4, start at row 800000)</span>
+df_pos = pd.read_csv(file_path, encoding=<span class="st">"latin-1"</span>,
+                     header=<span class="nb">None</span>, skiprows=<span class="nm">800000</span>, nrows=<span class="nm">5000</span>)
+
+df = pd.concat([df_neg, df_pos], ignore_index=<span class="nb">True</span>)
+df.columns = [<span class="st">"target"</span>, <span class="st">"id"</span>, <span class="st">"date"</span>, <span class="st">"flag"</span>, <span class="st">"user"</span>, <span class="st">"text"</span>]
+print(<span class="st">"Total Rows:"</span>, len(df))
+print(df.head())</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p5-s3">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Assign Sentiment Labels & Calculate Polarity</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract5_sentiment.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="cm"># Label: 0 = Negative, 4 = Positive</span>
+df[<span class="st">"sentiment"</span>] = df[<span class="st">"target"</span>].apply(
+    <span class="kw">lambda</span> x: <span class="st">"Negative"</span> <span class="kw">if</span> x == <span class="nm">0</span> <span class="kw">else</span> <span class="st">"Positive"</span>
+)
+
+<span class="cm"># TextBlob polarity: >0 positive, 0 neutral, <0 negative</span>
+<span class="kw">def</span> <span class="fn">get_polarity</span>(text):
+    <span class="kw">return</span> TextBlob(str(text)).sentiment.polarity
+
+df[<span class="st">"polarity"</span>] = df[<span class="st">"text"</span>].apply(get_polarity)
+df.to_csv(<span class="st">"sentiment_output.csv"</span>, index=<span class="nb">False</span>)
+print(<span class="st">"Saved to sentiment_output.csv"</span>)</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p5-s4">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">4</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Visualize Sentiment Distribution</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract5_viz.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="cm"># Count plot</span>
+plt.figure(figsize=(<span class="nm">6</span>, <span class="nm">4</span>))
+sns.countplot(x=<span class="st">"sentiment"</span>, data=df)
+plt.title(<span class="st">"Sentiment Distribution (Count)"</span>)
+plt.show()
+
+<span class="cm"># Pie chart</span>
+plt.figure(figsize=(<span class="nm">6</span>, <span class="nm">6</span>))
+df[<span class="st">"sentiment"</span>].value_counts().plot(
+    kind=<span class="st">"pie"</span>, autopct=<span class="st">"%1.1f%%"</span>,
+    colors=[<span class="st">"red"</span>, <span class="st">"green"</span>], startangle=<span class="nm">90</span>
+)
+plt.title(<span class="st">"Sentiment Distribution (Percentage)"</span>)
+plt.ylabel(<span class="st">""</span>)
+plt.show()</code></pre>
+          </div>
+          <div class="note-box">Since we loaded exactly 5000 of each, both classes will show 50% — this is expected.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p5-s5">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">5</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Generate Word Clouds</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract5_wordcloud.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="kw">def</span> <span class="fn">generate_wordcloud</span>(data, title):
+    text = <span class="st">" "</span>.join(data.astype(str))
+    wordcloud = WordCloud(width=<span class="nm">1000</span>, height=<span class="nm">500</span>,
+                          background_color=<span class="st">"white"</span>,
+                          max_words=<span class="nm">300</span>).generate(text)
+    plt.figure(figsize=(<span class="nm">10</span>, <span class="nm">5</span>))
+    plt.imshow(wordcloud, interpolation=<span class="st">"bilinear"</span>)
+    plt.axis(<span class="st">"off"</span>)
+    plt.title(title)
+    plt.show()
+
+generate_wordcloud(df[df.sentiment == <span class="st">"Positive"</span>][<span class="st">"text"</span>],
+                   <span class="st">"Most Frequent Words in Positive Tweets"</span>)
+generate_wordcloud(df[df.sentiment == <span class="st">"Negative"</span>][<span class="st">"text"</span>],
+                   <span class="st">"Most Frequent Words in Negative Tweets"</span>)
+
+print(<span class="st">"Sentiment Analysis Completed Successfully!"</span>)</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p5-s6">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">6</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Fetch & Plot Google Trends Data</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract5_trends.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code>pytrends = TrendReq(hl=<span class="st">'en-US'</span>, tz=<span class="nm">330</span>)
+keyword = [<span class="st">"Twitter"</span>]
+
+<span class="cm"># India trend</span>
+pytrends.build_payload(keyword, timeframe=<span class="st">"today 5-y"</span>, geo=<span class="st">"IN"</span>)
+data_india = pytrends.interest_over_time()
+<span class="kw">if not</span> data_india.empty:
+    plt.figure(figsize=(<span class="nm">10</span>, <span class="nm">5</span>))
+    plt.plot(data_india.index, data_india[<span class="st">"Twitter"</span>])
+    plt.title(<span class="st">"Google Trends - Twitter in India (Last 5 Years)"</span>)
+    plt.xlabel(<span class="st">"Year"</span>); plt.ylabel(<span class="st">"Interest"</span>)
+    plt.show()
+
+<span class="cm"># Worldwide trend</span>
+pytrends.build_payload(keyword, timeframe=<span class="st">"today 5-y"</span>, geo=<span class="st">""</span>)
+data_world = pytrends.interest_over_time()
+<span class="kw">if not</span> data_world.empty:
+    plt.figure(figsize=(<span class="nm">10</span>, <span class="nm">5</span>))
+    plt.plot(data_world.index, data_world[<span class="st">"Twitter"</span>])
+    plt.title(<span class="st">"Google Trends - Twitter Worldwide (Last 5 Years)"</span>)
+    plt.xlabel(<span class="st">"Year"</span>); plt.ylabel(<span class="st">"Interest"</span>)
+    plt.show()
+
+print(<span class="st">"LAB 5 Finished Successfully ✅"</span>)</code></pre>
+          </div>
+          <div class="success-box">✓ Both line graphs will show declining interest in "Twitter" since 2022 (after rebrand to X).</div>
+          <button class="mark-done-btn" onclick="markExpDone(5)">✓ Mark Experiment 5 Complete</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <hr class="exp-divider">
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- EXP 6 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="experiment" id="p6">
+    <div class="exp-header">
+      <div class="exp-number-big">6</div>
+      <div class="exp-header-content">
+        <div class="exp-tag">Experiment 06 · Graph Theory</div>
+        <h2>Facebook Network Analysis — Nodes, Edges & Graph Layouts</h2>
+        <div class="exp-meta">
+          <span class="meta-chip tool">networkx · matplotlib</span>
+          <span class="meta-chip">Dataset: pseudo_facebook.csv</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-container">
+
+      <div class="step" id="p6-s1">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Import Libraries & Build the Graph</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="step-desc">Upload <code>pseudo_facebook.csv</code> to Colab. We build a graph where <strong>source = dob_year</strong> and <strong>target = gender</strong>.</div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract6_build.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="kw">import</span> networkx <span class="kw">as</span> nx
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">from</span> IPython.display <span class="kw">import</span> display
+
+df = pd.read_csv(<span class="st">"/content/pseudo_facebook.csv"</span>)
+
+<span class="cm"># Build graph from edge list</span>
+fb_graph = nx.from_pandas_edgelist(df, source=<span class="st">"dob_year"</span>, target=<span class="st">"gender"</span>)
+print(type(fb_graph))</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p6-s2">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Inspect Nodes & Edges, Add Custom Edge</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract6_inspect.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="cm"># View all nodes and edges</span>
+display(fb_graph.nodes())
+display(fb_graph.edges())
+
+<span class="cm"># Add a new edge manually</span>
+fb_graph.add_edge(<span class="st">"female"</span>, <span class="st">"2022"</span>)
+
+<span class="cm"># View updated graph</span>
+display(fb_graph.nodes())
+display(fb_graph.edges())</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p6-s3">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Draw — Spring Layout</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract6_spring.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code>G = nx.Graph(fb_graph)
+plt.figure(figsize=(<span class="nm">12</span>, <span class="nm">8</span>))
+pos = nx.spring_layout(G)
+nx.draw(G, pos,
+        with_labels=<span class="nb">True</span>,
+        node_size=<span class="nm">200</span>,
+        node_color=<span class="st">'skyblue'</span>,
+        edge_color=<span class="st">'gray'</span>,
+        font_size=<span class="nm">10</span>)
+plt.show()</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p6-s4">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">4</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Draw — Random Layout</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract6_random.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code>plt.figure(figsize=(<span class="nm">12</span>, <span class="nm">8</span>))
+pos_random = nx.random_layout(G)
+nx.draw(G, pos_random,
+        with_labels=<span class="nb">True</span>,
+        node_size=<span class="nm">200</span>,
+        node_color=<span class="st">'lightcoral'</span>,
+        edge_color=<span class="st">'gray'</span>,
+        font_size=<span class="nm">10</span>)
+plt.title(<span class="st">"Facebook Friends Network - Random Layout"</span>)
+plt.show()</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p6-s5">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">5</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Draw — Circular Layout</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract6_circular.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code>plt.figure(figsize=(<span class="nm">12</span>, <span class="nm">8</span>))
+pos_circular = nx.circular_layout(G)
+nx.draw(G, pos_circular,
+        with_labels=<span class="nb">True</span>,
+        node_size=<span class="nm">200</span>,
+        node_color=<span class="st">'lightgreen'</span>,
+        edge_color=<span class="st">'gray'</span>,
+        font_size=<span class="nm">10</span>)
+plt.title(<span class="st">"Facebook Friends Network - Circular Layout"</span>)
+plt.show()</code></pre>
+          </div>
+          <div class="success-box">✓ Three different visual representations of the same network. Include all three graphs in your submission.</div>
+          <button class="mark-done-btn" onclick="markExpDone(6)">✓ Mark Experiment 6 Complete</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <hr class="exp-divider">
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- EXP 7 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="experiment" id="p7">
+    <div class="exp-header">
+      <div class="exp-number-big">7</div>
+      <div class="exp-header-content">
+        <div class="exp-tag">Experiment 07 · BI Tool</div>
+        <h2>Interactive Dashboard using Microsoft Power BI</h2>
+        <div class="exp-meta">
+          <span class="meta-chip tool">Power BI Desktop</span>
+          <span class="meta-chip">No Python — GUI workflow</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-container">
+
+      <div class="step" id="p7-s1">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Open Power BI & Connect Data Source</span><span class="step-type-badge badge-gui">GUI</span></div>
+          <ol style="margin:10px 0 10px 20px; font-size:13px; color:var(--ink2); line-height:2.2;">
+            <li>Download & install <strong>Power BI Desktop</strong> (free from microsoft.com)</li>
+            <li>Open Power BI → click <strong>Get Data</strong> (Home tab)</li>
+            <li>Select <strong>Excel Workbook</strong> → browse to your sales dataset</li>
+            <li>In the Navigator window, check the tables you want → click <strong>Load</strong></li>
+          </ol>
+          <div class="info-box">Use any sales CSV/Excel dataset. The practical uses a Sales dataset with columns: Order Date, Region, Category, Sales, Profit, Payment Mode, Segment.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p7-s2">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Clean Data in Power Query Editor</span><span class="step-type-badge badge-gui">GUI</span></div>
+          <ol style="margin:10px 0 10px 20px; font-size:13px; color:var(--ink2); line-height:2.2;">
+            <li>Click <strong>Transform Data</strong> (Home tab) → Power Query Editor opens</li>
+            <li>Check for null values → right-click column → <strong>Remove Nulls</strong> or <strong>Replace Values</strong></li>
+            <li>Verify data types (Date columns should be "Date", Sales should be "Decimal Number")</li>
+            <li>If needed, add a <strong>Year</strong> column: Add Column → Date → Year</li>
+            <li>Click <strong>Close & Apply</strong> to save changes</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="step" id="p7-s3">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Build the Dashboard Visuals</span><span class="step-type-badge badge-gui">GUI</span></div>
+          <div class="step-desc">Add these visuals from the <strong>Visualizations pane</strong> on the right:</div>
+          <table class="step-table">
+            <tr><th>Visual Type</th><th>Fields to Use</th><th>Purpose</th></tr>
+            <tr><td>Card (×4)</td><td>SUM(Sales), SUM(Profit), COUNT(Orders), Profit Margin</td><td>KPI tiles at top</td></tr>
+            <tr><td>Line Chart</td><td>X: Month, Y: Sales, Legend: Year</td><td>Monthly Sales YoY</td></tr>
+            <tr><td>Bar Chart</td><td>X: Category, Y: Sales + Profit</td><td>Sales & Profit by Category</td></tr>
+            <tr><td>Donut Chart</td><td>Legend: Payment Mode, Values: Sales</td><td>Sales by Payment</td></tr>
+            <tr><td>Pie Chart</td><td>Legend: Region, Values: Sales</td><td>Sales by Region</td></tr>
+            <tr><td>Map</td><td>Location: State/City, Size: Sales</td><td>Geographic distribution</td></tr>
+            <tr><td>Bar Chart</td><td>X: Product, Y: Sales (top 5)</td><td>Top Products by Sales</td></tr>
+            <tr><td>Slicer</td><td>Category or Region</td><td>Interactive filter</td></tr>
+          </table>
+          <div class="note-box">To add a visual: click the visual icon in Visualizations pane → drag fields into the field wells → format using the paint brush icon.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p7-s4">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">4</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Publish & Take Screenshot</span><span class="step-type-badge badge-gui">GUI</span></div>
+          <ol style="margin:10px 0 10px 20px; font-size:13px; color:var(--ink2); line-height:2.2;">
+            <li>Click <strong>File → Save</strong> → save as <code>SMA_Practical7.pbix</code></li>
+            <li>Take a screenshot of the full dashboard (Win+Shift+S or Snipping Tool)</li>
+            <li>Paste the screenshot into your lab record</li>
+            <li>(Optional) Click <strong>Publish</strong> in the Home tab → sign in to Power BI Service to share online</li>
+          </ol>
+          <button class="mark-done-btn" onclick="markExpDone(7)">✓ Mark Experiment 7 Complete</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <hr class="exp-divider">
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- EXP 8 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="experiment" id="p8">
+    <div class="exp-header">
+      <div class="exp-number-big">8</div>
+      <div class="exp-header-content">
+        <div class="exp-tag">Experiment 08 · Web Analytics</div>
+        <h2>Website Traffic Analysis using SimilarWeb</h2>
+        <div class="exp-meta">
+          <span class="meta-chip tool">similarweb.com</span>
+          <span class="meta-chip">Amazon vs Flipkart comparison</span>
+          <span class="meta-chip">No code required</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-container">
+
+      <div class="step" id="p8-s1">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Open SimilarWeb & Enter Website URLs</span><span class="step-type-badge badge-gui">Browser</span></div>
+          <ol style="margin:10px 0 10px 20px; font-size:13px; color:var(--ink2); line-height:2.2;">
+            <li>Go to <strong>similarweb.com</strong> → sign up for free account</li>
+            <li>In the search bar, type <code>amazon.com</code> → press Enter</li>
+            <li>You'll see the full website analysis dashboard</li>
+            <li>To compare: click <strong>Compare</strong> button → type <code>flipkart.com</code></li>
+          </ol>
+          <div class="info-box">Free account gives data for Dec 2025 – Feb 2026 (3-month window). Screenshot each section for your record.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p8-s2">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Record Traffic & Engagement Metrics</span><span class="step-type-badge badge-action">Document</span></div>
+          <div class="step-desc">Fill in the comparison table from SimilarWeb data:</div>
+          <table class="step-table">
+            <tr><th>Metric</th><th>amazon.com</th><th>flipkart.com</th></tr>
+            <tr><td>Global Rank</td><td>#9</td><td>#133</td></tr>
+            <tr><td>Total Visits</td><td>8.086B</td><td>598.8M</td></tr>
+            <tr><td>Monthly Visits</td><td>2.695B</td><td>199.6M</td></tr>
+            <tr><td>Monthly Unique Visitors</td><td>514.4M</td><td>76.31M</td></tr>
+            <tr><td>Visit Duration</td><td>00:06:11</td><td>00:04:19</td></tr>
+            <tr><td>Pages per Visit</td><td>9.30</td><td>6.54</td></tr>
+            <tr><td>Bounce Rate</td><td>30.4%</td><td>52.6%</td></tr>
+            <tr><td>Mobile vs Desktop</td><td>49.1% / 50.9%</td><td>75.8% / 24.2%</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="step" id="p8-s3">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Record Marketing Channels Data</span><span class="step-type-badge badge-action">Document</span></div>
+          <div class="step-desc">Scroll to <strong>Marketing Channels</strong> section. Note which channels drive most traffic for each site (Direct, Organic Search, Social, Referral, etc.).</div>
+          <div class="note-box">Key finding: Amazon is in the lead with 5.48% social traffic. Flipkart leads with 42.44% organic search. Both use YouTube as the top social channel.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p8-s4">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">4</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Write Comparison & Conclusion</span><span class="step-type-badge badge-action">Write</span></div>
+          <div class="step-desc">Based on the data, write a short paragraph covering: which site has better engagement, which has lower bounce rate, which is more mobile-focused, and what each site should improve.</div>
+          <div class="success-box">✓ <strong>Sample Conclusion:</strong> Amazon significantly outperforms Flipkart in total traffic, visit duration, and pages per visit. Flipkart's 52.6% bounce rate vs Amazon's 30.4% indicates users find Amazon more engaging. Flipkart's 75.8% mobile traffic suggests it should further optimize its mobile experience.</div>
+          <button class="mark-done-btn" onclick="markExpDone(8)">✓ Mark Experiment 8 Complete</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <hr class="exp-divider">
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- EXP 9 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="experiment" id="p9">
+    <div class="exp-header">
+      <div class="exp-number-big">9</div>
+      <div class="exp-header-content">
+        <div class="exp-tag">Experiment 09 · Design</div>
+        <h2>Create a Promotional Flyer / Advertisement using Google Docs</h2>
+        <div class="exp-meta">
+          <span class="meta-chip tool">Google Docs</span>
+          <span class="meta-chip">No code required</span>
+          <span class="meta-chip">Output: Travel agency flyer</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-container">
+
+      <div class="step" id="p9-s1">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Open Google Docs & Set Up Page</span><span class="step-type-badge badge-gui">Google Docs</span></div>
+          <ol style="margin:10px 0 10px 20px; font-size:13px; color:var(--ink2); line-height:2.2;">
+            <li>Go to <strong>docs.google.com</strong> → create a new blank document</li>
+            <li>Click <strong>File → Page setup</strong></li>
+            <li>Set orientation to <strong>Portrait</strong>, margins to <strong>0.5 inch</strong> on all sides</li>
+            <li>Click OK</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="step" id="p9-s2">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Add Background & Header Image</span><span class="step-type-badge badge-gui">Google Docs</span></div>
+          <ol style="margin:10px 0 10px 20px; font-size:13px; color:var(--ink2); line-height:2.2;">
+            <li>Click <strong>Insert → Image → Search the web</strong></li>
+            <li>Search "travel beach background" → select a wide image</li>
+            <li>Right-click image → <strong>Image options → Text wrapping → Behind text</strong></li>
+            <li>Resize to fill the top half of the page</li>
+          </ol>
+          <div class="note-box">Alternative: Use <strong>Canva.com</strong> (free) which has built-in flyer templates — much faster for a polished result.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p9-s3">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Add Flyer Content</span><span class="step-type-badge badge-gui">Google Docs</span></div>
+          <div class="step-desc">Add these sections to your flyer using text boxes (<strong>Insert → Drawing → Text Box</strong>):</div>
+          <table class="step-table">
+            <tr><th>Section</th><th>Content to Add</th></tr>
+            <tr><td>Brand name (top)</td><td>Liceria &amp; Co. (small, top-left)</td></tr>
+            <tr><td>Main headline</td><td>TRAVEL AROUND THE WORLD (bold, large font)</td></tr>
+            <tr><td>Offer badge</td><td>50% OFF (circle shape, orange fill)</td></tr>
+            <tr><td>About Us</td><td>Short description: professional travel agency</td></tr>
+            <tr><td>Our Advantage</td><td>Bullet list: guides, packages, prices, transport, 24/7 support</td></tr>
+            <tr><td>Special Offer / CTA</td><td>BOOK NOW! + Phone + Email + Website</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="step" id="p9-s4">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">4</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Export & Submit</span><span class="step-type-badge badge-gui">Google Docs</span></div>
+          <ol style="margin:10px 0 10px 20px; font-size:13px; color:var(--ink2); line-height:2.2;">
+            <li>Click <strong>File → Download → PDF Document (.pdf)</strong></li>
+            <li>Take a screenshot of the final flyer</li>
+            <li>Paste screenshot into your lab record with a brief note on design choices</li>
+          </ol>
+          <div class="success-box">✓ Your flyer should have a clear headline, a visible CTA (BOOK NOW!), contact info, and a professional color scheme (blue + orange works well for travel).</div>
+          <button class="mark-done-btn" onclick="markExpDone(9)">✓ Mark Experiment 9 Complete</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <hr class="exp-divider">
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- EXP 10 -->
+  <!-- ══════════════════════════════════════════════ -->
+  <section class="experiment" id="p10">
+    <div class="exp-header">
+      <div class="exp-number-big">10</div>
+      <div class="exp-header-content">
+        <div class="exp-tag">Experiment 10 · API + NLP</div>
+        <h2>YouTube API Comment Scraping & Sentiment Analysis</h2>
+        <div class="exp-meta">
+          <span class="meta-chip tool">YouTube Data API v3</span>
+          <span class="meta-chip tool">requests · TextBlob · pandas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-container">
+
+      <div class="step" id="p10-s1">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">1</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Generate YouTube Data API Key</span><span class="step-type-badge badge-gui">Browser</span></div>
+          <ol style="margin:10px 0 10px 20px; font-size:13px; color:var(--ink2); line-height:2.2;">
+            <li>Go to <strong>console.cloud.google.com</strong> → sign in with Google</li>
+            <li>Click <strong>Create Project</strong> → name it "SMA Lab 10" → Create</li>
+            <li>In left sidebar → <strong>APIs & Services → Library</strong></li>
+            <li>Search <strong>"YouTube Data API v3"</strong> → click it → click <strong>Enable</strong></li>
+            <li>Go to <strong>APIs & Services → Credentials</strong></li>
+            <li>Click <strong>Create Credentials → API Key</strong></li>
+            <li>Copy the key — you'll use it in the code below</li>
+          </ol>
+          <div class="note-box"><strong>Important:</strong> Keep your API key private. Don't share or publish it. The free quota allows ~10,000 units/day.</div>
+        </div>
+      </div>
+
+      <div class="step" id="p10-s2">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">2</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Fetch Video Information</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="step-desc">Get the video ID from any YouTube URL: e.g. <code>youtube.com/watch?v=<strong>kiBv0vYnQ7I</strong></code> — the part after <code>v=</code> is the video ID.</div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract10_video_info.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="kw">import</span> requests
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">from</span> textblob <span class="kw">import</span> TextBlob
+
+<span class="cm"># ⚠️  Replace with your actual API key and video ID</span>
+video_id = <span class="st">"kiBv0vYnQ7I"</span>
+api_key  = <span class="st">"YOUR_API_KEY_HERE"</span>
+
+<span class="cm"># Build request URL for video info</span>
+video_info_url = (
+    <span class="st">f"https://www.googleapis.com/youtube/v3/videos"</span>
+    <span class="st">f"?part=snippet&amp;id={video_id}&amp;key={api_key}"</span>
+)
+
+response = requests.get(video_info_url)
+video_info_data = response.json()
+print(video_info_data)</code></pre>
+          </div>
+          <div class="output-wrap">
+            <div class="output-label">Expected Output (partial)</div>
+            <div class="output-content">{'kind': 'youtube#videoListResponse',
+ 'items': [{'kind': 'youtube#video',
+   'id': 'kiBv0vYnQ7I',
+   'snippet': {'title': 'Taarak Mehta Ka Ooltah Chashmah - Ep 2865',
+     'channelTitle': 'Sony SAB', ...}}]}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p10-s3">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">3</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Fetch Comments from the Video</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract10_comments.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="cm"># Fetch comment threads</span>
+comments_url = (
+    <span class="st">f"https://www.googleapis.com/youtube/v3/commentThreads"</span>
+    <span class="st">f"?part=snippet&amp;videoId={video_id}&amp;key={api_key}"</span>
+)
+
+comments_response = requests.get(comments_url)
+comments_data = comments_response.json()
+
+<span class="cm"># Extract top-level comment text from each thread</span>
+comments = [
+    item[<span class="st">"snippet"</span>][<span class="st">"topLevelComment"</span>][<span class="st">"snippet"</span>][<span class="st">"textOriginal"</span>]
+    <span class="kw">for</span> item <span class="kw">in</span> comments_data[<span class="st">"items"</span>]
+]
+
+print(comments)</code></pre>
+          </div>
+          <div class="note-box">The API returns up to 20 comments per page by default. You can add <code>&maxResults=100</code> to get more (max 100 per request).</div>
+        </div>
+      </div>
+
+      <div class="step" id="p10-s4">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">4</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Run Sentiment Analysis on Each Comment</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract10_sentiment.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="kw">def</span> <span class="fn">get_comment_sentiment</span>(comment):
+    analysis = TextBlob(comment)
+    <span class="kw">if</span> analysis.sentiment.polarity &gt; <span class="nm">0</span>:
+        <span class="kw">return</span> <span class="st">"Positive"</span>
+    <span class="kw">elif</span> analysis.sentiment.polarity == <span class="nm">0</span>:
+        <span class="kw">return</span> <span class="st">"neutral"</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> <span class="st">"negative"</span>
+
+comment_list   = []
+sentiment_list = []
+
+<span class="kw">for</span> comment <span class="kw">in</span> comments:
+    sentiment = get_comment_sentiment(comment)
+    comment_list.append(comment)
+    sentiment_list.append(sentiment)
+    print(<span class="st">f"{comment} : {sentiment}"</span>)</code></pre>
+          </div>
+          <div class="output-wrap">
+            <div class="output-label">Expected Output</div>
+            <div class="output-content">Old Tarak Mehta chahie : Positive
+😂😂😂😂😂♥♥♥♥♥ : neutral
+सुंदरलाल♥♥♥ : neutral
+Buddha aajtak na kabi padhai... : neutral</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" id="p10-s5">
+        <div class="step-spine">
+          <div class="step-circle" onclick="markDone(this)"><span class="step-num">5</span></div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title"><span>Save Results to CSV & Verify</span><span class="step-type-badge badge-code">Code</span></div>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span><span class="code-filename">pract10_save.py</span><span class="code-lang">Python</span></span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><code><span class="cm"># Create DataFrame</span>
+sentiment_df = pd.DataFrame({
+    <span class="st">"Comments"</span>: comment_list,
+    <span class="st">"Sentiment"</span>: sentiment_list
+})
+print(sentiment_df.head())
+
+<span class="cm"># Save to CSV</span>
+sentiment_df.to_csv(<span class="st">"semtiment.csv"</span>, index=<span class="nb">False</span>)
+
+<span class="cm"># Reload and verify</span>
+df = pd.read_csv(<span class="st">"semtiment.csv"</span>)
+df.head()</code></pre>
+          </div>
+          <div class="success-box">✓ You should have a CSV with two columns: Comments and Sentiment. Download it from Colab Files panel.</div>
+          <button class="mark-done-btn" onclick="markExpDone(10)">✓ Mark Experiment 10 Complete 🎉</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+  // Track which experiments are done
+  const expDone = {};
+  let totalDone = 0;
+
+  function markDone(circle) {
+    circle.classList.toggle('done');
+    // Color the line below
+    const line = circle.closest('.step-spine').querySelector('.step-line');
+    if (line) line.classList.toggle('done');
+    updateProgress();
+  }
+
+  function markExpDone(num) {
+    expDone[num] = !expDone[num];
+    const badge = document.getElementById('badge-' + num);
+    const btn = event.currentTarget;
+    if (expDone[num]) {
+      badge.parentElement.classList.add('done');
+      btn.classList.add('done');
+      btn.textContent = '✓ Experiment ' + num + ' Done!';
+      totalDone = Object.values(expDone).filter(Boolean).length;
+    } else {
+      badge.parentElement.classList.remove('done');
+      btn.classList.remove('done');
+      btn.textContent = '✓ Mark Experiment ' + num + ' Complete';
+      totalDone = Object.values(expDone).filter(Boolean).length;
+    }
+    document.getElementById('done-count').textContent = totalDone;
+    document.getElementById('progress-text').textContent = totalDone + ' / 10';
+    document.getElementById('top-progress').style.width = (totalDone / 10 * 100) + '%';
+  }
+
+  function updateProgress() {
+    // Count done circles
+    const done = document.querySelectorAll('.step-circle.done').length;
+    const total = document.querySelectorAll('.step-circle').length;
+    document.getElementById('top-progress').style.width = (done / total * 100) + '%';
+  }
+
+  function toggleSidebarExp(num, targetId) {
+    const steps = document.getElementById('snav-' + num);
+    const allSteps = document.querySelectorAll('.sidebar-steps');
+    const allBtns = document.querySelectorAll('.sidebar-exp-btn');
+
+    allSteps.forEach(s => { if (s !== steps) s.classList.remove('open'); });
+    allBtns.forEach(b => b.classList.remove('active'));
+
+    steps.classList.toggle('open');
+    event.currentTarget.classList.toggle('active');
+
+    // Scroll to section
+    const el = document.getElementById(targetId);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function jumpTo(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyCode(btn) {
+    const pre = btn.closest('.code-wrap').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // Highlight active sidebar nav on scroll
+  const experiments = document.querySelectorAll('.experiment');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        const num = id.replace('p', '');
+        document.querySelectorAll('.sidebar-exp-btn').forEach(b => b.classList.remove('active'));
+        const btn = document.querySelector(`#nav-${num} .sidebar-exp-btn`);
+        if (btn) btn.classList.add('active');
+      }
+    });
+  }, { threshold: 0.25 });
+
+  experiments.forEach(e => observer.observe(e));
+</script>
+</body>
+</html>
