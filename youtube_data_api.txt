@@ -1,0 +1,47 @@
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("facebook.csv")
+
+print("Dataset Preview: - nerwork_analysis.py:8")
+print(df.head())
+
+df = df.dropna(subset=["dob_year", "gender"])
+
+fb_graph = nx.from_pandas_edgelist(df, source="dob_year", target="gender")
+
+print("\nGraph Type: - nerwork_analysis.py:17")
+print(type(fb_graph))
+
+print("\nNodes BEFORE: - nerwork_analysis.py:21")
+print(list(fb_graph.nodes())[:20])
+
+print("\nEdges BEFORE: - nerwork_analysis.py:25")
+print(list(fb_graph.edges())[:20])
+
+fb_graph.add_edge("female", "2022")
+
+print("\nNodes AFTER: - nerwork_analysis.py:32")
+print(list(fb_graph.nodes())[:20])
+
+print("\nEdges AFTER: - nerwork_analysis.py:36")
+print(list(fb_graph.edges())[:20])
+
+G = nx.Graph(fb_graph)
+
+plt.figure(figsize=(10, 8))
+nx.draw(G, with_labels=True, node_size=500, font_size=8)
+plt.title("Facebook Network Graph")
+plt.show()
+
+degree_centrality = nx.degree_centrality(G)
+print("\nDegree Centrality (Top 5): - nerwork_analysis.py:55")
+print(dict(list(degree_centrality.items())[:5]))
+
+clustering = nx.clustering(G)
+print("\nClustering Coefficient (Top 5): - nerwork_analysis.py:60")
+print(dict(list(clustering.items())[:5]))
+
+print("\nTotal Nodes: - nerwork_analysis.py:64", G.number_of_nodes())
+print("Total Edges: - nerwork_analysis.py:65", G.number_of_edges())
